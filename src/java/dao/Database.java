@@ -43,6 +43,8 @@ public class Database {
             if(!adminExits) {
                 sql = "INSERT INTO user(name, password) VALUES('admin', '123')";
                 statement.execute(sql);
+                sql = "INSERT INTO user(name, password) VALUES('user', 'password')";
+                statement.execute(sql);
             }
             return connection;
         } catch (ClassNotFoundException | SQLException ex) {
