@@ -15,6 +15,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
  
 public class Database {
     public static Connection getConnection() {
@@ -24,15 +26,20 @@ public class Database {
         try {
             Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/secureweb",
+                    "jdbc:postgresql://localhost/secureweb",
                     "postgres", 
                     "postgres");
             statement = connection.createStatement();
-            String sql = "CREATE TABLE IF NOT EXISTS user("
+            String sql = "CREATE TABLE user("
                     + "id SERIAL NOT NULL PRIMARY KEY, "
                     + "name varchar(225) NOT NULL UNIQUE, "
-                    + "password varchar(225)";
-            statement.execute(sql);
+                    + "password varchar(225))";
+            try {
+                statement.execute(sql);
+            } catch (SQLException sQLException) {
+                System.out.println("Sql Exception Error: " + sQLException);
+                System.out.println("Command:  " + sql);
+            }
             resultSet = statement.executeQuery("SELECT name FROM user");
             boolean adminExits = false;
             while(resultSet.next()) {
@@ -47,8 +54,11 @@ public class Database {
                 statement.execute(sql);
             }
             return connection;
-        } catch (ClassNotFoundException | SQLException ex) {
+        } catch (SQLException ex) {
             System.out.println("Database.getConnection() Error -->" + ex.getMessage());
+            return null;
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
