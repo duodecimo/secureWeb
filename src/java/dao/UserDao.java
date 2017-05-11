@@ -8,21 +8,21 @@ public class UserDao {
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement(
-                    "select name, password from user where name= ? and password= ? ");
+                    "select name, password from userinfo where name= ? and password= ? ");
             ps.setString(1, user);
             ps.setString(2, password);
   
             ResultSet rs = ps.executeQuery();
             if (rs.next()) // found
             {
-                System.out.println(rs.getString("user"));
+                System.out.println(rs.getString("name"));
                 return true;
             }
             else {
                 return false;
             }
         } catch (Exception ex) {
-            System.out.println("Error in login() -->" + ex.getMessage());
+            System.out.println("Error in login() --> " + ex.getMessage());
             if(connection == null) {
                 System.out.println("null connection!");
             }

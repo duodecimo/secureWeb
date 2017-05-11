@@ -23,6 +23,7 @@ public class Database {
         Connection connection;
         Statement statement;
         ResultSet resultSet;
+        String result;
         try {
             Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(
@@ -30,32 +31,50 @@ public class Database {
                     "postgres", 
                     "postgres");
             statement = connection.createStatement();
-            String sql = "CREATE TABLE user("
-                    + "id SERIAL NOT NULL PRIMARY KEY, "
+            String sql = "CREATE TABLE userinfo("
+                    + "id SERIAL PRIMARY KEY, "
                     + "name varchar(225) NOT NULL UNIQUE, "
                     + "password varchar(225))";
             try {
                 statement.execute(sql);
             } catch (SQLException sQLException) {
-                System.out.println("Sql Exception Error: " + sQLException);
-                System.out.println("Command:  " + sql);
+                System.out.println("Sql Exception Error: " + sQLException.getMessage());
+                System.out.println("Command: " + sql);
             }
-            resultSet = statement.executeQuery("SELECT name FROM user");
-            boolean adminExits = false;
-            while(resultSet.next()) {
-                if(resultSet.getString("name").equals("admin")) {
-                    adminExits = true;
+            sql = "SELECT name FROM userinfo";
+            try {
+                resultSet = statement.executeQuery(sql);
+                boolean adminExits = false;
+                while(resultSet.next()) {
+                    result = resultSet.getString("name");
+                    System.out.println("Read from table userinfo: " + result);
+                    if(result.equals("admin")) {
+                        adminExits = true;
+                    }
                 }
-            }
-            if(!adminExits) {
-                sql = "INSERT INTO user(name, password) VALUES('admin', '123')";
-                statement.execute(sql);
-                sql = "INSERT INTO user(name, password) VALUES('user', 'password')";
-                statement.execute(sql);
+                if(!adminExits) {
+                    sql = "INSERT INTO userinfo(name, password) VALUES('admin', '123')";
+                    try {
+                        statement.execute(sql);
+                    } catch (SQLException sQLException) {
+                        System.out.println("Sql Exception Error: " + sQLException.getMessage());
+                        System.out.println("Command: " + sql);
+                    }
+                    sql = "INSERT INTO userinfo(name, password) VALUES('name', 'pass')";
+                    try {
+                        statement.execute(sql);
+                    } catch (SQLException sQLException) {
+                        System.out.println("Sql Exception Error: " + sQLException.getMessage());
+                        System.out.println("Command: " + sql);
+                    }
+                }
+            } catch (SQLException sQLException) {
+                System.out.println("Sql Exception Error: " + sQLException.getMessage());
+                System.out.println("Command: " + sql);
             }
             return connection;
         } catch (SQLException ex) {
-            System.out.println("Database.getConnection() Error -->" + ex.getMessage());
+            System.out.println("Database.getConnection() Error --> " + ex.getMessage());
             return null;
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
