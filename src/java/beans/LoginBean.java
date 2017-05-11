@@ -52,7 +52,7 @@ public class LoginBean implements Serializable {
             HttpSession session = Util.getSession();
             session.setAttribute("username", name);
  
-            return "/user/home";
+            return "secured/home";
         } else {
  
             FacesContext.getCurrentInstance().addMessage(
@@ -64,13 +64,13 @@ public class LoginBean implements Serializable {
             // invalidate session, and redirect to other pages
  
             //message = "Invalid Login. Please Try Again!";
-            return "/user/login";
+            return "login";
         }
     }
  
     public String logout() {
       HttpSession session = Util.getSession();
       session.invalidate();
-      return "/user/login";
+      return "login";
    }
 }
